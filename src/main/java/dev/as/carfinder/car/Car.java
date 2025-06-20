@@ -9,4 +9,5 @@ public class Car {
     @Id
     @GeneratedValue
     private Long id;
+    private String brand;
 }
