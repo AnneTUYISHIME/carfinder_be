@@ -6,9 +6,18 @@ import dev.as.carfinder.user.User;
 import dev.as.carfinder.car.Car;
 import dev.as.carfinder.review.Review;
 import dev.as.carfinder.Role;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id

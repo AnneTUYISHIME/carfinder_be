@@ -7,13 +7,22 @@ import dev.as.carfinder.user.User;
 import dev.as.carfinder.brand.Brand;
 import dev.as.carfinder.BodyType.BodyType;
 import dev.as.carfinder.review.Review;
+import lombok.*;
+import lombok.Setter;
 
 @Entity
 @Table(name = "cars")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+
 public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+
     private Long id;
 
     private String name;
@@ -53,4 +62,5 @@ public class Car {
     private List<Review> reviews;
 
     // Getters & Setters
+
 }

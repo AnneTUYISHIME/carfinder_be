@@ -3,9 +3,18 @@ package dev.as.carfinder.BodyType;
 import jakarta.persistence.*;
 import java.util.List;
 import dev.as.carfinder.car.Car;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "body_types")
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BodyType {
 
     @Id

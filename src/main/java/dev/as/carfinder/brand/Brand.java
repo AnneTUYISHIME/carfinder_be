@@ -3,9 +3,17 @@ package dev.as.carfinder.brand;
 import jakarta.persistence.*;
 import java.util.List;
 import dev.as.carfinder.car.Car;
+import lombok.*;
+
 
 @Entity
 @Table(name = "brands")
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+
 public class Brand {
 
     @Id
