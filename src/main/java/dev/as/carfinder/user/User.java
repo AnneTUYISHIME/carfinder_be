@@ -46,6 +46,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Car> cars;
 
+    @Column(nullable = false)
+    private String password;
+
     public void setProfile(Profile createProfile) {
     }
 
@@ -54,6 +57,12 @@ public class User {
         SELLER,
         BUYER
     }
+
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "address")
+    private String address;
 }
 
 
