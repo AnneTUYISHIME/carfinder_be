@@ -6,28 +6,29 @@ package dev.as.carfinder.user;
 
 import dev.as.carfinder.DTos.UserCreationDto;
 import dev.as.carfinder.user.User.Role;
-import dev.as.carfinder.user.User;
-import dev.as.carfinder.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import dev.as.carfinder.DTos.ProfileCreationDto;
 
 import java.util.List;
 import java.util.Optional;
+
 
     @Service
     @RequiredArgsConstructor
     public class UserService {
 
         private final UserRepository userRepository;
+        private final ProfileRepository ProfileRepository;
 
-        //  Create User from DTO → Save to DB → Return Entity
+
         public User createUser(UserCreationDto dto) {
             User user = User.builder()
                     .fname(dto.getFname())
                     .lname(dto.getLname())
                     .email(dto.getEmail())
                     .phone(dto.getPhone())
-                    .role(Role.BUYER) // Default role → you can change to pass from DTO if you want
+                    .role(dto.getRole())
                     .build();
 
             return userRepository.save(user);
@@ -43,9 +44,20 @@ import java.util.Optional;
             return userRepository.findById(id);
         }
 
-        //  Delete user by ID
+
         public void deleteUser(Long id) {
             userRepository.deleteById(id);
+        }
+
+        public User createProfile(ProfileCreationDto dto) {
+            Profile profile = new Profile();
+            profile.setFullName(dto.getFullName());
+            profile.setProfilePicture(dto.getProfilePicture());
+            Profile createProfile = ProfileRepository.save(profile);
+
+            User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+            user.setProfile(createProfile);
+            return userRepository.save(user);
         }
     }
 

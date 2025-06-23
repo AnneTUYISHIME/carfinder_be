@@ -42,9 +42,12 @@ public class User {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // One User can have Many Cars (the cars table will have a 'user_id' column)
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Car> cars;
+
+    public void setProfile(Profile createProfile) {
+    }
 
     public enum Role {
         ADMIN,

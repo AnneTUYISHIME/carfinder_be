@@ -4,8 +4,10 @@ package dev.as.carfinder.DTos;
 
 
 
+import dev.as.carfinder.user.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
     @Data
@@ -23,6 +25,10 @@ import lombok.Data;
 
         @NotBlank(message = "Phone number is required")
         private String phone;
+
+
+        @NotNull
+        private User.Role role;
     }
 
 

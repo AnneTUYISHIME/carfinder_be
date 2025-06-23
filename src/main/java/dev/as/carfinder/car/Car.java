@@ -45,6 +45,11 @@ public class Car {
     @JoinColumn(name = "seller_id")
     private User seller;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
 
 }
 

@@ -6,11 +6,13 @@ import dev.as.carfinder.DTos.UserCreationDto;
 import dev.as.carfinder.DTos.UserResponseDto;
 import dev.as.carfinder.user.User;
 //import dev.as.carfinder.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import dev.as.carfinder.DTos.ProfileCreationDto;
 
 import java.util.List;
 
@@ -29,7 +31,7 @@ import java.util.List;
             return new ResponseEntity<>(new UserResponseDto(savedUser.getId(), fullName, savedUser.getEmail()), HttpStatus.CREATED);
         }
 
-        // GET all users → still returning List<User> for now (we can use response DTOs later if needed)
+
         @GetMapping
         public ResponseEntity<List<User>> getAllUsers() {
             List<User> users = userService.getAllUsers();
@@ -50,6 +52,18 @@ import java.util.List;
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();
         }
+
+
+        @PostMapping("/profile")
+        @Operation(
+                summary = "Create a profile"
+        )
+        public User createProfile(@RequestBody @Valid ProfileCreationDto dto) {
+            return userService.createProfile(dto);
+        }
+
+
+
     }
 
 
