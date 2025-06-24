@@ -34,6 +34,12 @@ public class BrandController {
         return brandService.updateBrand(id, dto);
     }
 
+    @PatchMapping("/{id}")
+    public BrandDTO patchBrand(@PathVariable Long id, @RequestBody BrandDTO dto) {
+        return brandService.patchBrand(id, dto);
+    }
+
+
     @DeleteMapping("/{id}")
     public void deleteBrand(@PathVariable Long id) {
         brandService.deleteBrand(id);

@@ -45,6 +45,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO patchUser(Long id, UserDTO dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (dto.getFname() != null) user.setFname(dto.getFname());
+        if (dto.getLname() != null) user.setLname(dto.getLname());
+        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+        if (dto.getPhone() != null) user.setPhone(dto.getPhone());
+        if (dto.getRole() != null) user.setRole(Role.valueOf(dto.getRole()));
+
+        userRepository.save(user);
+        return mapEntityToDto(user);
+    }
+
+    @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }

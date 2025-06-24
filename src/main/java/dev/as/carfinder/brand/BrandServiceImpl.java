@@ -43,6 +43,19 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
+    public BrandDTO patchBrand(Long id, BrandDTO dto) {
+        Brand brand = brandRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Brand not found"));
+
+        if (dto.getName() != null) {
+            brand.setName(dto.getName());
+        }
+
+        brandRepository.save(brand);
+        return mapToDto(brand);
+    }
+
+    @Override
     public void deleteBrand(Long id) {
         brandRepository.deleteById(id);
     }

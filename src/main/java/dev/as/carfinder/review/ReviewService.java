@@ -8,5 +8,7 @@ public interface ReviewService {
     ReviewDTO getReviewById(Long id);
     List<ReviewDTO> getAllReviews();
     ReviewDTO updateReview(Long id, ReviewDTO dto);
+    ReviewDTO patchReview(Long id, ReviewDTO dto);
+
     void deleteReview(Long id);
 }

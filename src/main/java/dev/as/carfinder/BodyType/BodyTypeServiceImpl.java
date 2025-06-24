@@ -41,6 +41,19 @@ public class BodyTypeServiceImpl implements BodyTypeService {
     }
 
     @Override
+    public BodyTypeDTO patchBodyType(Long id, BodyTypeDTO dto) {
+        BodyType bt = bodyTypeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Body Type not found"));
+
+        if (dto.getName() != null) bt.setName(dto.getName());
+        if (dto.getImage() != null) bt.setImage(dto.getImage());
+
+        BodyType saved = bodyTypeRepository.save(bt);
+        return mapToDto(saved);
+    }
+
+
+    @Override
     public void deleteBodyType(Long id) {
         bodyTypeRepository.deleteById(id);
     }

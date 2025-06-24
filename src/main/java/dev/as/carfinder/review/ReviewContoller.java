@@ -34,6 +34,12 @@ public class ReviewContoller {
         return reviewService.updateReview(id, dto);
     }
 
+    @PatchMapping("/{id}")
+    public ReviewDTO patchReview(@PathVariable Long id, @RequestBody ReviewDTO dto) {
+        return reviewService.patchReview(id, dto);
+    }
+
+
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);

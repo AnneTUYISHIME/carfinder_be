@@ -8,5 +8,7 @@ public interface BodyTypeService {
     BodyTypeDTO getBodyTypeById(Long id);
     List<BodyTypeDTO> getAllBodyTypes();
     BodyTypeDTO updateBodyType(Long id, BodyTypeDTO dto);
+    BodyTypeDTO patchBodyType(Long id, BodyTypeDTO dto);
+
     void deleteBodyType(Long id);
 }

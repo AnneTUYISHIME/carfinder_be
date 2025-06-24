@@ -8,5 +8,7 @@ public interface BrandService {
     BrandDTO getBrandById(Long id);
     List<BrandDTO> getAllBrands();
     BrandDTO updateBrand(Long id, BrandDTO dto);
+    BrandDTO patchBrand(Long id, BrandDTO dto);
+
     void deleteBrand(Long id);
 }

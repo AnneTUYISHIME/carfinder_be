@@ -53,6 +53,31 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    public ReviewDTO patchReview(Long id, ReviewDTO dto) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+
+        if (dto.getReview() != null) review.setReview(dto.getReview());
+        if (dto.getStars() != null) review.setStars(dto.getStars());
+
+        if (dto.getUserId() != null) {
+            User user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            review.setUser(user);
+        }
+
+        if (dto.getCarId() != null) {
+            Car car = carRepository.findById(dto.getCarId())
+                    .orElseThrow(() -> new RuntimeException("Car not found"));
+            review.setCar(car);
+        }
+
+        Review saved = reviewRepository.save(review);
+        return mapEntityToDto(saved);
+    }
+
+
+    @Override
     public void deleteReview(Long id) {
         reviewRepository.deleteById(id);
     }

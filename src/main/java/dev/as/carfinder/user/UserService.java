@@ -9,5 +9,7 @@ public interface UserService {
     UserDTO getUserById(Long id);
     List<UserDTO> getAllUsers();
     UserDTO updateUser(Long id, UserDTO dto);
+    UserDTO patchUser(Long id, UserDTO dto);
+
     void deleteUser(Long id);
 }

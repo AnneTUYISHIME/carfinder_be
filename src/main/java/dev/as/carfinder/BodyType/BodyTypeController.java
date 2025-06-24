@@ -34,6 +34,11 @@ public class BodyTypeController {
         return bodyTypeService.updateBodyType(id, dto);
     }
 
+    @PatchMapping("/{id}")
+    public BodyTypeDTO patchBodyType(@PathVariable Long id, @RequestBody BodyTypeDTO dto) {
+        return bodyTypeService.patchBodyType(id, dto);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteBodyType(@PathVariable Long id) {
         bodyTypeService.deleteBodyType(id);
