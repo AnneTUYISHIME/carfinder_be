@@ -9,5 +9,6 @@ public interface CarService {
     CarDTO getCarById(Long id);
     List<CarDTO> getAllCars();
     CarDTO updateCar(Long id, CarDTO carDTO);
+    CarDTO patchCar(Long id, CarDTO carDTO);
     void deleteCar(Long id);
 }

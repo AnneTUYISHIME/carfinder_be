@@ -9,8 +9,11 @@ import lombok.*;
 @Builder
 
 public class BrandDTO {
-    private Long id;
+    //private Long id;
     private String name;
+
+    public void setId(Long id) {
+    }
 
     // Getters & Setters
 

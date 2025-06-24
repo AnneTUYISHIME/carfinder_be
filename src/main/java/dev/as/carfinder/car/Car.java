@@ -61,6 +61,15 @@ public class Car {
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
+    public void setSellerId(Long sellerId) {
+    }
+
+    public void setBodyTypeId(Long bodyTypeId) {
+    }
+
+    public void setBrandId(Long brandId) {
+    }
+
     // Getters & Setters
 
 }

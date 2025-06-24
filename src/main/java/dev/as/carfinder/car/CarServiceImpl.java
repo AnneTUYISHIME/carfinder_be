@@ -1,37 +1,31 @@
 package dev.as.carfinder.car;
 
-import dev.as.carfinder.car.CarDTO;
-import dev.as.carfinder.car.Car;
-import dev.as.carfinder.user.User;
-import dev.as.carfinder.brand.Brand;
-import dev.as.carfinder.BodyType.BodyType;
-import dev.as.carfinder.car.CarRepository;
-import dev.as.carfinder.brand.BrandRepository;
 import dev.as.carfinder.BodyType.BodyTypeRepository;
-
-
+import dev.as.carfinder.brand.BrandRepository;
 import dev.as.carfinder.user.UserRepository;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+//import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import lombok.*;
+
+
+
+//@Data
+//@AllArgsConstructor
+//@Builder
 @Service
+@RequiredArgsConstructor
+
 public class CarServiceImpl implements CarService {
-
-    @Autowired
-    private CarRepository carRepository;
-
-    @Autowired
-    private BrandRepository brandRepository;
-
-    @Autowired
-    private BodyTypeRepository bodyTypeRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final CarRepository carRepository;
+    private final BrandRepository brandRepository;
+    private final BodyTypeRepository bodyTypeRepository;
+    private final UserRepository userRepository;
 
     @Override
     public CarDTO createCar(CarDTO dto) {
@@ -61,6 +55,41 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public CarDTO patchCar(Long id, CarDTO carDTO) {
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+
+        if (carDTO.getName() != null) car.setName(carDTO.getName());
+        if (carDTO.getPrice() != null) car.setPrice(carDTO.getPrice());
+        if (carDTO.getLocation() != null) car.setLocation(carDTO.getLocation());
+        if (carDTO.getImages() != null) car.setImages(carDTO.getImages());
+        if (carDTO.getDriveType() != null) car.setDriveType(carDTO.getDriveType());
+        if (carDTO.getEngine() != null) car.setEngine(carDTO.getEngine());
+        if (carDTO.getDescription() != null) car.setDescription(carDTO.getDescription());
+        if (carDTO.getFeatures() != null) {
+            car.setFeatures(String.join(",", carDTO.getFeatures()));
+        }
+        if (carDTO.getManufactureDate() != null) car.setManufactureDate(carDTO.getManufactureDate());
+
+        if (carDTO.getBrandId() != null) {
+            car.setBrand(brandRepository.findById(carDTO.getBrandId())
+                    .orElseThrow(() -> new RuntimeException("Brand not found")));
+        }
+
+        if (carDTO.getBodyTypeId() != null) {
+            car.setBodyType(bodyTypeRepository.findById(carDTO.getBodyTypeId())
+                    .orElseThrow(() -> new RuntimeException("BodyType not found")));
+        }
+
+        if (carDTO.getSellerId() != null) {
+            car.setSeller(userRepository.findById(carDTO.getSellerId())
+                    .orElseThrow(() -> new RuntimeException("User not found")));
+        }
+
+        Car saved = carRepository.save(car);
+        return mapEntityToDto(saved);
+    }
+    @Override
     public void deleteCar(Long id) {
         carRepository.deleteById(id);
     }
@@ -69,7 +98,7 @@ public class CarServiceImpl implements CarService {
 
     private CarDTO mapEntityToDto(Car car) {
         CarDTO dto = new CarDTO();
-        dto.setId(car.getId());
+       // dto.setId(car.getId());
         dto.setName(car.getName());
         dto.setPrice(car.getPrice());
         dto.setManufactureDate(car.getManufactureDate());
