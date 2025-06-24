@@ -1,50 +1,66 @@
-package dev.as.carfinder.auth;
+package dev.as.carfinder.Auth;
 
-
-
-
-import lombok.RequiredArgsConstructor;
-import dev.as.carfinder.auth.AuthService.;
-import org.devkiki.sec.auth.jwt.JwtService;
-import dev.as.carfinder.user.User;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import dev.as.carfinder.DTos.LoginDto;
+import dev.as.carfinder.DTos.LoginResponseDto;
+import dev.as.carfinder.DTos.RegisterRequestDto;
+import dev.as.carfinder.jwt.JwtService;
+import dev.as.carfinder.user.User.Role;
+import dev.as.carfinder.user.User;
+import dev.as.carfinder.user.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-@RestController
-@RequestMapping("/api/auth")
+@Service
 @RequiredArgsConstructor
-public class AuthController {
-    // localhost:8080/api/auth/login localhost:8080/api/auth/sign-up
-    private final AuthService authService;
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    @PostMapping("/login") // I'll be returning the token only
-    public ResponseEntity<Map<String,String>> login(@RequestBody LoginDto dto) {
-        var loggedInUser = authService.loginUser(dto);
-        String token = jwtService.generateToken(loggedInUser);
-        Map<String, String> response = new HashMap<>();
-        response.put("token", token);
-        return ResponseEntity.ok(response);
+
+    @Transactional
+    public User register(RegisterRequestDto dto) {
+        if (!dto.password().equals(dto.confirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+
+        if (userRepository.findByEmail(dto.email()).isPresent()) {
+            throw new IllegalArgumentException("Email already taken.");
+        }
+
+        User user = User.builder()
+                .fname(dto.firstName())
+                .lname(dto.lastName())
+                .email(dto.email())
+                .address(dto.address())
+                .phone(dto.phone())
+                .role(dto.role() != null ? dto.role() : Role.BUYER)
+                .password(passwordEncoder.encode(dto.password()))
+                .build();
+
+        return userRepository.save(user);
     }
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<User> login(@RequestBody SignupDto dto) {
-        var registerUser =  authService.registerUser(dto);
-        return new ResponseEntity<>(registerUser, HttpStatus.OK);
+    public LoginResponseDto login(LoginDto dto) {
+        User user = userRepository.findByEmail(dto.email())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + dto.email()));
+
+        if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        String token = jwtService.generateToken(user);
+
+        return new LoginResponseDto(
+                token,
+                user.getFname() + " " + user.getLname(),
+                user.getEmail(),
+                user.getRole().name()
+        );
     }
-
-    @GetMapping("test")
-    public ResponseEntity<String> test() {
-        return new ResponseEntity<>("Hello World", HttpStatus.OK);
     }
-
-}
-
-
-
 

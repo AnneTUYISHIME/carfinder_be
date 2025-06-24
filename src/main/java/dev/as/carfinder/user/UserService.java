@@ -9,6 +9,7 @@ import dev.as.carfinder.user.User.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import dev.as.carfinder.DTos.ProfileCreationDto;
+import dev.as.carfinder.exception.ResourceNotFound;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +59,10 @@ import java.util.Optional;
             User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
             user.setProfile(createProfile);
             return userRepository.save(user);
+        }
+
+        public User findByEmail(String email) {
+            return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFound("User not found!"));
         }
     }
 

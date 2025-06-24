@@ -1,20 +1,14 @@
 package dev.as.carfinder.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-
-
-
-
-
+import dev.as.carfinder.car.Car;
 import jakarta.persistence.*;
 import lombok.*;
-import dev.as.carfinder.car.Car;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -23,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,15 +36,19 @@ public class User {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Car> cars;
 
     @Column(nullable = false)
     private String password;
 
-    public void setProfile(Profile createProfile) {
-    }
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "address")
+    private String address;
+
+
 
     public enum Role {
         ADMIN,
@@ -58,12 +56,37 @@ public class User {
         BUYER
     }
 
-    @Column(name = "password_reset_token")
-    private String passwordResetToken;
+    public void setProfile(Profile createProfile) {}
 
-    @Column(name = "address")
-    private String address;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_"+role));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+
 }
-
-
-
