@@ -17,7 +17,8 @@ import jakarta.validation.constraints.Size;
             @NotBlank(message = "Phone is required") String phone,
             Role role,
             @NotBlank(message = "Password is required") @Size(min = 6) String password,
-            @NotBlank(message = "Confirm password is required") String confirmPassword
+            @NotBlank(message = "Confirm password is required") String confirmPassword,
+            String secretKey
     ) {
 
     }
