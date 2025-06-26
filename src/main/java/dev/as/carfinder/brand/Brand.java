@@ -1,6 +1,7 @@
 package dev.as.carfinder.brand;
 
 import jakarta.persistence.*;
+<<<<<<< ft-brand-car
 import java.util.List;
 import dev.as.carfinder.car.Car;
 import lombok.*;
@@ -28,3 +29,24 @@ public class Brand {
 
     // Getters & Setters
 }
+=======
+
+
+
+
+
+
+    @Entity
+    @Table(name = "brands")
+    public class Brand {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        @Column(unique = true, nullable = false)
+        private String name;
+    }
+
+
+
+>>>>>>> main
