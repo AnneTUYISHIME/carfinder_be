@@ -1,11 +1,18 @@
 package dev.as.carfinder.bodytype;
 
+import dev.as.carfinder.car.Car;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import lombok.*;
 
-import java.time.LocalDateTime;
+@Entity
+@Table(name = "body_types")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class BodyType {
 
     @Entity
     @Table(name = "body_types")
@@ -26,7 +33,3 @@ import java.time.LocalDateTime;
         private LocalDateTime createdAt = LocalDateTime.now();
 
     }
-
-
-
-

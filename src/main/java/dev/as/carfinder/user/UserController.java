@@ -1,7 +1,6 @@
 package dev.as.carfinder.user;
 
 
-
 import dev.as.carfinder.DTos.UserCreationDto;
 import dev.as.carfinder.DTos.UserResponseDto;
 import dev.as.carfinder.user.User;
@@ -65,5 +64,4 @@ import java.util.List;
 
 
     }
-
 

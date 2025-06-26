@@ -1,9 +1,6 @@
 package dev.as.carfinder.user;
 
 
-
-
-
 import dev.as.carfinder.DTos.UserCreationDto;
 import dev.as.carfinder.user.User.Role;
 import lombok.RequiredArgsConstructor;
@@ -65,5 +62,4 @@ import java.util.Optional;
             return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFound("User not found!"));
         }
     }
-
 
