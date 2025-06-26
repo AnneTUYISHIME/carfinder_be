@@ -1,29 +1,23 @@
 package dev.as.carfinder.review;
 
-import dev.as.carfinder.review.ReviewDTO;
-import dev.as.carfinder.review.Review;
-import dev.as.carfinder.review.ReviewRepository;
-import dev.as.carfinder.user.UserRepository;
+import dev.as.carfinder.car.Car;
 import dev.as.carfinder.car.CarRepository;
 import dev.as.carfinder.user.User;
-import dev.as.carfinder.car.Car;
-
+import dev.as.carfinder.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CarRepository carRepository;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final CarRepository carRepository;
 
     @Override
     public ReviewDTO createReview(ReviewDTO dto) {
@@ -95,7 +89,6 @@ public class ReviewServiceImpl implements ReviewService {
 
     private ReviewDTO mapEntityToDto(Review review) {
         ReviewDTO dto = new ReviewDTO();
-        dto.setId(review.getId());
         dto.setReview(review.getReview());
         dto.setStars(review.getStars());
         dto.setUserId(review.getUser().getId());

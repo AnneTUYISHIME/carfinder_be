@@ -16,9 +16,4 @@ public class UserDTO {
     private String email;
     private String phone;
     private String role;
-
-    public void setId(Long id) {
-    }
-
-    // Getters & Setters
 }

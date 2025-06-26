@@ -1,7 +1,5 @@
 package dev.as.carfinder.car;
 
-import dev.as.carfinder.car.CarDTO;
-
 import java.util.List;
 
 public interface CarService {

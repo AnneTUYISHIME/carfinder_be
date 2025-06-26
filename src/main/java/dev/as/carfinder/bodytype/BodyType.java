@@ -1,31 +1,28 @@
 package dev.as.carfinder.bodytype;
 
+import dev.as.carfinder.car.Car;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import lombok.*;
 
-import java.time.LocalDateTime;
+@Entity
+@Table(name = "body_types")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class BodyType {
 
-    @Entity
-    @Table(name = "body_types")
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class BodyType {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    private String name;
 
-        private String name;
+    private String image;
 
-        private String image;
+    @OneToMany(mappedBy = "bodyType", cascade = CascadeType.ALL)
+    private List<Car> cars;
 
-        private LocalDateTime createdAt = LocalDateTime.now();
-
-    }
-
-
-
-
+}

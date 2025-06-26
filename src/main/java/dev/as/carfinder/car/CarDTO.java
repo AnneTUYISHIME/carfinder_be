@@ -1,6 +1,5 @@
 package dev.as.carfinder.car;
 
-import dev.as.carfinder.brand.Brand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class CarDTO {
     private Long id;
     private String name;
@@ -29,7 +27,4 @@ public class CarDTO {
     private Long bodyTypeId;
     private Long sellerId;
 
-
-
-    // Getters & Setters
 }

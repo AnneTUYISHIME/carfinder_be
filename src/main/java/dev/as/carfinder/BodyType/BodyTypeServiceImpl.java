@@ -1,15 +1,15 @@
-package dev.as.carfinder.BodyType;
+package dev.as.carfinder.bodytype;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BodyTypeServiceImpl implements BodyTypeService {
 
-    @Autowired
-    private BodyTypeRepository bodyTypeRepository;
+    private final BodyTypeRepository bodyTypeRepository;
 
     @Override
     public BodyTypeDTO createBodyType(BodyTypeDTO dto) {
@@ -65,4 +65,5 @@ public class BodyTypeServiceImpl implements BodyTypeService {
         dto.setImage(bt.getImage());
         return dto;
     }
+
 }

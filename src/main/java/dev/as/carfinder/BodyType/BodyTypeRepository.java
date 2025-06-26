@@ -1,6 +1,5 @@
-package dev.as.carfinder.BodyType;
+package dev.as.carfinder.bodytype;
 
-import dev.as.carfinder.BodyType.BodyType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

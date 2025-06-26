@@ -1,21 +1,17 @@
 package dev.as.carfinder.user;
 
-import dev.as.carfinder.user.UserDTO;
-import dev.as.carfinder.user.UserRepository;
-import dev.as.carfinder.user.User;
 import dev.as.carfinder.Role;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     public UserDTO createUser(UserDTO dto) {
@@ -82,4 +78,5 @@ public class UserServiceImpl implements UserService {
         dto.setRole(user.getRole().name());
         return dto;
     }
+
 }

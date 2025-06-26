@@ -1,18 +1,15 @@
 package dev.as.carfinder.review;
 
-import dev.as.carfinder.review.ReviewDTO;
-import dev.as.carfinder.review.ReviewService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/reviews")
-public class ReviewContoller {
-
-    @Autowired
-    private ReviewService reviewService;
+@RequiredArgsConstructor
+public class ReviewController {
+    private final ReviewService reviewService;
 
     @PostMapping
     public ReviewDTO createReview(@RequestBody ReviewDTO dto) {
@@ -38,7 +35,6 @@ public class ReviewContoller {
     public ReviewDTO patchReview(@PathVariable Long id, @RequestBody ReviewDTO dto) {
         return reviewService.patchReview(id, dto);
     }
-
 
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable Long id) {

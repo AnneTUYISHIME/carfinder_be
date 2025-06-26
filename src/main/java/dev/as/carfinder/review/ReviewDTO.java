@@ -9,16 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class ReviewDTO {
-    //private Long id;
     private String review;
     private Integer stars;
     private Long userId;
     private Long carId;
-
-    public void setId(Long id) {
-    }
-
-    // Getters & Setters
 }

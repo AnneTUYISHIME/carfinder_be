@@ -1,26 +1,16 @@
 package dev.as.carfinder.car;
 
-import dev.as.carfinder.BodyType.BodyTypeRepository;
+import dev.as.carfinder.bodytype.BodyTypeRepository;
 import dev.as.carfinder.brand.BrandRepository;
 import dev.as.carfinder.user.UserRepository;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-//import lombok.RequiredArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.*;
-
-
-
-//@Data
-//@AllArgsConstructor
-//@Builder
 @Service
 @RequiredArgsConstructor
-
 public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final BrandRepository brandRepository;
@@ -135,5 +125,6 @@ public class CarServiceImpl implements CarService {
         car.setBodyType(bodyTypeRepository.findById(dto.getBodyTypeId()).orElseThrow(() -> new RuntimeException("BodyType not found")));
         car.setSeller(userRepository.findById(dto.getSellerId()).orElseThrow(() -> new RuntimeException("User not found")));
     }
+
 }
 

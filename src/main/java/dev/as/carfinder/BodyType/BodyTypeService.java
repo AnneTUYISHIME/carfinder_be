@@ -1,6 +1,5 @@
-package dev.as.carfinder.BodyType;
+package dev.as.carfinder.bodytype;
 
-import dev.as.carfinder.BodyType.BodyTypeDTO;
 import java.util.List;
 
 public interface BodyTypeService {

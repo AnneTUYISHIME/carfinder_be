@@ -1,18 +1,14 @@
-package dev.as.carfinder.BodyType;
+package dev.as.carfinder.bodytype;
 
-import dev.as.carfinder.BodyType.BodyTypeDTO;
-import dev.as.carfinder.BodyType.BodyTypeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bodytypes")
+@RequestMapping("/api/body-types")
+@RequiredArgsConstructor
 public class BodyTypeController {
-
-    @Autowired
-    private BodyTypeService bodyTypeService;
+    private final BodyTypeService bodyTypeService;
 
     @PostMapping
     public BodyTypeDTO createBodyType(@RequestBody BodyTypeDTO dto) {
@@ -43,4 +39,5 @@ public class BodyTypeController {
     public void deleteBodyType(@PathVariable Long id) {
         bodyTypeService.deleteBodyType(id);
     }
+
 }

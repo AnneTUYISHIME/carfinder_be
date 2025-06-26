@@ -1,6 +1,5 @@
 package dev.as.carfinder.user;
 
-import dev.as.carfinder.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
