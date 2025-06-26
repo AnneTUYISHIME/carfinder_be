@@ -1,47 +1,50 @@
 package dev.as.carfinder.user;
 
-import dev.as.carfinder.user.UserDTO;
-import dev.as.carfinder.user.UserService;
+import dev.as.carfinder.user.dto.CreateUserRequest;
+import dev.as.carfinder.user.dto.UserResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@SecurityRequirement(name = "auth")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "Users Controller", description = "A User management Controller")
 public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public UserDTO createUser(@RequestBody UserDTO dto) {
-        return userService.createUser(dto);
-    }
-
-    @GetMapping("/{id}")
-    public UserDTO getUser(@PathVariable Long id) {
-        return userService.getUserById(id);
+    @Operation(summary = "Create user endpoint")
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequest req) {
+        var createdUser = userService.create(req);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<UserDTO> getAllUsers() {
-        return userService.getAllUsers();
+    @Operation(summary = "Get all users endpoint")
+    public ResponseEntity<List<UserResponseDto>> findAll() {
+        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO dto) {
-        return userService.updateUser(id, dto);
-    }
-
-    @PatchMapping("/{id}")
-    public UserDTO patchUser(@PathVariable Long id, @RequestBody UserDTO dto) {
-        return userService.patchUser(id, dto);
+    @GetMapping("/{id}")
+    @Operation(summary = "Get a user by id")
+    public ResponseEntity<UserResponseDto> findByEmail(@PathVariable(name = "id") Long id) {
+        return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    @Operation(summary = "Delete a user by id")
+    public ResponseEntity<?> deleteUser(@PathVariable(name = "id") Long id) {
+        userService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
