@@ -17,7 +17,7 @@ public class CarDTO {
     private String name;
     private LocalDate manufactureDate;
     private Double price;
-    private String images;
+    private List<String> images;
     private String location;
     private String driveType;
     private String engine;
