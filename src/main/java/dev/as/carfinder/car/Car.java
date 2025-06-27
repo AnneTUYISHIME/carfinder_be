@@ -49,5 +49,9 @@ public class Car {
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Review> reviews;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 
 }
