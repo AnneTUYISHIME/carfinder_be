@@ -14,4 +14,5 @@ public class BodyTypeDTO {
     private Long id;
     private String name;
     private String image;
+
 }

@@ -51,7 +51,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found"));
 
-        if (dto.getReview() != null) review.setReview(dto.getReview());
+        if (dto.getName() != null) review.setName(dto.getName());
         if (dto.getStars() != null) review.setStars(dto.getStars());
 
         if (dto.getUserId() != null) {
@@ -77,7 +77,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private void mapDtoToEntity(ReviewDTO dto, Review review) {
-        review.setReview(dto.getReview());
+        review.setName(dto.getName());
         review.setStars(dto.getStars());
 
         User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
@@ -89,7 +89,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private ReviewDTO mapEntityToDto(Review review) {
         ReviewDTO dto = new ReviewDTO();
-        dto.setReview(review.getReview());
+        dto.setName(review.getName());
         dto.setStars(review.getStars());
         dto.setUserId(review.getUser().getId());
         dto.setCarId(review.getCar().getId());

@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,7 @@ public class Car {
     private Double price;
     @ElementCollection
     private List<String> images;
+
     private String location;
     private String driveType;
     private String engine;
@@ -44,14 +46,16 @@ public class Car {
     private BodyType bodyType;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private User seller;
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Review> reviews;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+
 
 
 }

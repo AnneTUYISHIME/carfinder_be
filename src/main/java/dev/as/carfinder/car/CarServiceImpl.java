@@ -2,16 +2,25 @@ package dev.as.carfinder.car;
 
 import dev.as.carfinder.bodytype.BodyTypeRepository;
 import dev.as.carfinder.brand.BrandRepository;
+import dev.as.carfinder.user.User;
 import dev.as.carfinder.user.UserRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.jpa.domain.Specification;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
+@Getter
 @RequiredArgsConstructor
+@Service
 public class CarServiceImpl implements CarService {
+
     private final CarRepository carRepository;
     private final BrandRepository brandRepository;
     private final BodyTypeRepository bodyTypeRepository;
@@ -19,95 +28,118 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarDTO createCar(CarDTO dto) {
-        Car car = new Car();
-        mapDtoToEntity(dto, car);
+        var car = mapDtoToEntity(dto);
+        car.setOwner(getCurrentUser());
         carRepository.save(car);
         return mapEntityToDto(car);
     }
 
     @Override
     public CarDTO getCarById(Long id) {
-        Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
         return mapEntityToDto(car);
     }
 
     @Override
     public List<CarDTO> getAllCars() {
-        return carRepository.findAll().stream().map(this::mapEntityToDto).collect(Collectors.toList());
+        return carRepository.findAll()
+                .stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public CarDTO updateCar(Long id, CarDTO dto) {
-        Car car = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car not found"));
-        mapDtoToEntity(dto, car);
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+
+        if (!isOwner(car)) throw new RuntimeException("You are not the owner of this car.");
+
+        mapDtoToEntity(dto);
         carRepository.save(car);
         return mapEntityToDto(car);
     }
 
     @Override
-    public CarDTO patchCar(Long id, CarDTO carDTO) {
+    public CarDTO patchCar(Long id, CarDTO dto) {
         Car car = carRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Car not found"));
 
-        if (carDTO.getName() != null) car.setName(carDTO.getName());
-        if (carDTO.getPrice() != null) car.setPrice(carDTO.getPrice());
-        if (carDTO.getLocation() != null) car.setLocation(carDTO.getLocation());
-        if (carDTO.getImages() != null) car.setImages(carDTO.getImages());
-        if (carDTO.getDriveType() != null) car.setDriveType(carDTO.getDriveType());
-        if (carDTO.getEngine() != null) car.setEngine(carDTO.getEngine());
-        if (carDTO.getDescription() != null) car.setDescription(carDTO.getDescription());
-        if (carDTO.getFeatures() != null) {
-            car.setFeatures(String.join(",", carDTO.getFeatures()));
-        }
-        if (carDTO.getManufactureDate() != null) car.setManufactureDate(carDTO.getManufactureDate());
+        if (!isOwner(car)) throw new RuntimeException("You are not the owner of this car.");
 
-        if (carDTO.getBrandId() != null) {
-            car.setBrand(brandRepository.findById(carDTO.getBrandId())
+        if (dto.getName() != null) car.setName(dto.getName());
+        if (dto.getPrice() != null) car.setPrice(dto.getPrice());
+        if (dto.getManufactureDate() != null) car.setManufactureDate(dto.getManufactureDate());
+        if (dto.getLocation() != null) car.setLocation(dto.getLocation());
+        if (dto.getDriveType() != null) car.setDriveType(dto.getDriveType());
+        if (dto.getEngine() != null) car.setEngine(dto.getEngine());
+        if (dto.getDescription() != null) car.setDescription(dto.getDescription());
+        if (dto.getFeatures() != null) car.setFeatures(String.join(",", dto.getFeatures()));
+        if (dto.getImages() != null) car.setImages(dto.getImages());
+
+        if (dto.getBrandId() != null) {
+            car.setBrand(brandRepository.findById(dto.getBrandId())
                     .orElseThrow(() -> new RuntimeException("Brand not found")));
         }
 
-        if (carDTO.getBodyTypeId() != null) {
-            car.setBodyType(bodyTypeRepository.findById(carDTO.getBodyTypeId())
+        if (dto.getBodyTypeId() != null) {
+            car.setBodyType(bodyTypeRepository.findById(dto.getBodyTypeId())
                     .orElseThrow(() -> new RuntimeException("BodyType not found")));
         }
 
-        if (carDTO.getSellerId() != null) {
-            car.setSeller(userRepository.findById(carDTO.getSellerId())
-                    .orElseThrow(() -> new RuntimeException("User not found")));
-        }
-
-        Car saved = carRepository.save(car);
-        return mapEntityToDto(saved);
+        carRepository.save(car);
+        return mapEntityToDto(car);
     }
+
     @Override
     public void deleteCar(Long id) {
-        carRepository.deleteById(id);
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+
+        if (!isOwner(car)) throw new RuntimeException("You are not the owner of this car.");
+
+        carRepository.delete(car);
     }
 
-    // Helper Methods
+    @Override
+    public List<CarDTO> getCarsByOwner(Long ownerId) {
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Owner not found"));
 
-    private CarDTO mapEntityToDto(Car car) {
-        CarDTO dto = new CarDTO();
-       // dto.setId(car.getId());
-        dto.setName(car.getName());
-        dto.setPrice(car.getPrice());
-        dto.setManufactureDate(car.getManufactureDate());
-        dto.setImages(car.getImages());
-        dto.setLocation(car.getLocation());
-        dto.setDriveType(car.getDriveType());
-        dto.setEngine(car.getEngine());
-        dto.setDescription(car.getDescription());
-
-        // Split comma-separated features into list
-        dto.setFeatures(List.of(car.getFeatures().split(",")));
-
-        dto.setBrandId(car.getBrand().getId());
-        dto.setBodyTypeId(car.getBodyType().getId());
-        dto.setSellerId(car.getSeller().getId());
-        return dto;
+        return carRepository.findByOwner(owner)
+                .stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
     }
 
-    private void mapDtoToEntity(CarDTO dto, Car car) {
+    @Override
+    public List<CarDTO> getCarsByOwnerEmail(String email) {
+        User owner = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return carRepository.findByOwner(owner)
+                .stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<CarDTO> filterCars(Long brandId, Long bodyTypeId, Double minPrice, Double maxPrice, String location, String driveType) {
+        Specification<Car> spec = Specification
+                .where(CarSpecifications.hasBrand(brandId))
+                .and(CarSpecifications.hasBodyType(bodyTypeId))
+                .and(CarSpecifications.priceBetween(minPrice, maxPrice))
+                .and(CarSpecifications.locationLike(location))
+                .and(CarSpecifications.driveTypeEquals(driveType));
+
+        return carRepository.findAll(spec).stream()
+                .map(this::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    private Car mapDtoToEntity(CarDTO dto) {
+        Car car = new Car();
         car.setName(dto.getName());
         car.setPrice(dto.getPrice());
         car.setManufactureDate(dto.getManufactureDate());
@@ -116,15 +148,42 @@ public class CarServiceImpl implements CarService {
         car.setDriveType(dto.getDriveType());
         car.setEngine(dto.getEngine());
         car.setDescription(dto.getDescription());
-
-        // Convert List<String> to comma-separated String
         car.setFeatures(String.join(",", dto.getFeatures()));
 
-        // Set Relationships
-        car.setBrand(brandRepository.findById(dto.getBrandId()).orElseThrow(() -> new RuntimeException("Brand not found")));
-        car.setBodyType(bodyTypeRepository.findById(dto.getBodyTypeId()).orElseThrow(() -> new RuntimeException("BodyType not found")));
-        car.setSeller(userRepository.findById(dto.getSellerId()).orElseThrow(() -> new RuntimeException("User not found")));
+        car.setBrand(brandRepository.findById(dto.getBrandId())
+                .orElseThrow(() -> new RuntimeException("Brand not found")));
+        car.setBodyType(bodyTypeRepository.findById(dto.getBodyTypeId())
+                .orElseThrow(() -> new RuntimeException("BodyType not found")));
+
+        return car;
     }
 
-}
+    private CarDTO mapEntityToDto(Car car) {
+        return CarDTO.builder()
+                .id(car.getId())
+                .name(car.getName())
+                .price(car.getPrice())
+                .manufactureDate(car.getManufactureDate())
+                .location(car.getLocation())
+                .images(car.getImages())
+                .driveType(car.getDriveType())
+                .engine(car.getEngine())
+                .description(car.getDescription())
+                .features(car.getFeatures().split(","))
+                .brandId(car.getBrand().getId())
+                .bodyTypeId(car.getBodyType().getId())
+//                .ownerId(car.getOwner().getId())
+                .build();
+    }
 
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+    }
+
+    private boolean isOwner(Car car) {
+        return car.getOwner().getEmail().equals(getCurrentUser().getEmail());
+    }
+}

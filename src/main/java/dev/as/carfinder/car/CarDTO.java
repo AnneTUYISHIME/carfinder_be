@@ -1,30 +1,32 @@
 package dev.as.carfinder.car;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CarDTO {
     private Long id;
     private String name;
-    private LocalDate manufactureDate;
     private Double price;
-    private List<String> images;
+    private LocalDate manufactureDate;
     private String location;
+    private String[] features;
+    private List<String> images;
+
     private String driveType;
     private String engine;
     private String description;
-    private List<String> features;
+
     private Long brandId;
     private Long bodyTypeId;
-    private Long sellerId;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long ownerId;
 }

@@ -13,6 +13,7 @@ public class BrandDTO {
     private String name;
 
     public void setId(Long id) {
+        
     }
 
     // Getters & Setters

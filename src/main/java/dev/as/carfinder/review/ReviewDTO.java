@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ReviewDTO {
-    private String review;
+    private String name;
     private Integer stars;
     private Long userId;
     private Long carId;
