@@ -1,8 +1,10 @@
 package dev.as.carfinder.auth;
 
+import dev.as.carfinder.DTOs.ResetPasswordRequestDto;
 import dev.as.carfinder.auth.dto.LoginDto;
 import dev.as.carfinder.auth.dto.LoginResponse;
 import dev.as.carfinder.auth.dto.RegisterDto;
+import dev.as.carfinder.DTOs.ForgotPasswordRequestDto;
 import dev.as.carfinder.user.dto.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -40,6 +42,18 @@ public class AuthController {
     public ResponseEntity<UserResponseDto> getCurrentUser() {
         var loggedInUser = authService.getAuthenticatedUser();
         return ResponseEntity.ok(loggedInUser);
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@Valid @RequestBody ForgotPasswordRequestDto request) {
+        return authService.forgotPassword(request.email());
+    }
+
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestBody ResetPasswordRequestDto request) {
+        authService.resetPassword(request.token(), request.newPassword(), request.confirmPassword());
+        return "Password reset successfully.";
     }
 
 

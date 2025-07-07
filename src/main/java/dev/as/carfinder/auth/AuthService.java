@@ -27,6 +27,8 @@ public class AuthService {
     private final UserRepository userRepo;
     private final ModelMapper modelMapper;
 
+
+
     public UserResponseDto registerUser(RegisterDto dto) {
         var user = modelMapper.map(dto, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -41,7 +43,7 @@ public class AuthService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(auth);
-        var authenticatedUser = userRepo.findByEmail(dto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        var authenticatedUser = UserRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return jwtService.generateToken(authenticatedUser);
     }
 
@@ -50,11 +52,32 @@ public class AuthService {
         if (!(auth instanceof AnonymousAuthenticationToken)) {
             String userName = auth.getName();
             System.out.println(userName);
-            var user = userRepo.findByEmail(userName).orElseThrow(() -> new ResourceNotFound("User not found"));
+            var user = UserRepository.findByEmail(userName).orElseThrow(() -> new ResourceNotFound("User not found"));
             return modelMapper.map(user, UserResponseDto.class);
         } else {
             throw new RuntimeException("User not found");
         }
+    }
+
+    public String forgotPassword(String email) {
+        User user = UserRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        return jwtService.generateResetPasswordToken(user);
+    }
+
+    public void resetPassword(String token, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+
+        String email = jwtService.getUsername(token);
+
+        User user = UserRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
     }
 
 }

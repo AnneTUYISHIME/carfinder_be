@@ -90,4 +90,7 @@ public class JwtService {
     }
 
 
+    public String generateResetPasswordToken(User user) {
+        return null;
+    }
 }

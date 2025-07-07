@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 ).permitAll()
                                 .anyRequest()
                                 .authenticated()
+
                 )
                 .sessionManagement(
                         customizer -> customizer.sessionCreationPolicy(

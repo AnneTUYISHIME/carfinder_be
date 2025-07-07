@@ -34,7 +34,7 @@ public class AppConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepo.findByEmail(username).orElseThrow(() -> new ResourceNotFound("User with email " + username + " not found"));
+        return username -> UserRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFound("User with email " + username + " not found"));
     }
 
 }
