@@ -90,7 +90,18 @@ public class JwtService {
     }
 
 
-    public String generateResetPasswordToken(User user) {
+   /* public String generateResetPasswordToken(User user) {
         return null;
+    }*/
+
+    // resting password mathod and expiration date
+    public String generateResetPasswordToken(User user) {
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .claim("purpose", "reset_password")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 15 * 60 * 1000)) // 15 minutes expiry
+                .signWith(getKey())
+                .compact();
     }
 }

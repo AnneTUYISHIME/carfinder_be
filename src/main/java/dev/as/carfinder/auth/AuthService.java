@@ -43,7 +43,7 @@ public class AuthService {
         );
 
         SecurityContextHolder.getContext().setAuthentication(auth);
-        var authenticatedUser = UserRepository.findByEmail(dto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        var authenticatedUser = userRepo.findByEmail(dto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return jwtService.generateToken(authenticatedUser);
     }
 
@@ -52,7 +52,7 @@ public class AuthService {
         if (!(auth instanceof AnonymousAuthenticationToken)) {
             String userName = auth.getName();
             System.out.println(userName);
-            var user = UserRepository.findByEmail(userName).orElseThrow(() -> new ResourceNotFound("User not found"));
+            var user = userRepo.findByEmail(userName).orElseThrow(() -> new ResourceNotFound("User not found"));
             return modelMapper.map(user, UserResponseDto.class);
         } else {
             throw new RuntimeException("User not found");
@@ -60,7 +60,7 @@ public class AuthService {
     }
 
     public String forgotPassword(String email) {
-        User user = UserRepository.findByEmail(email)
+        User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
         return jwtService.generateResetPasswordToken(user);
@@ -73,7 +73,7 @@ public class AuthService {
 
         String email = jwtService.getUsername(token);
 
-        User user = UserRepository.findByEmail(email)
+        User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
         user.setPassword(passwordEncoder.encode(newPassword));
