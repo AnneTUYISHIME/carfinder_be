@@ -18,6 +18,9 @@ public class RegisterDto {
     private String firstName;
     @NotBlank(message = "Last name is required")
     private String lastName;
+    @NotBlank(message = "Phone is required")
+    String phone;
+
     @NotBlank(message = "Password is required")
     private String password;
 }

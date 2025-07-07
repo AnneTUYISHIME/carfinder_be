@@ -40,12 +40,8 @@ public class User implements UserDetails {
     private Boolean isDeleted;
 
     private String password;
-
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
-
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Car> cars;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

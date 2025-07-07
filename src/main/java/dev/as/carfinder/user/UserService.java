@@ -47,7 +47,7 @@ public class UserService {
     }
 
     public User findByEmail(String email) {
-        return UserRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFound("User not found!"));
+        return userRepo.findByEmail(email).orElseThrow(() -> new ResourceNotFound("User not found!"));
     }
 
     public void deleteById(Long id) {
