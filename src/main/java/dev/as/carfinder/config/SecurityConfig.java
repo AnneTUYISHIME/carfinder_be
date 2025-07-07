@@ -27,6 +27,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         customizer -> customizer
                                 .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/body_types").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/brands").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/cars").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/reviews").permitAll()
                                 .requestMatchers(
                                         "/api/auth/login",
                                         "/api/auth/register",
