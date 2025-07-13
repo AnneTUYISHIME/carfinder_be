@@ -4,8 +4,10 @@ import dev.as.carfinder.car.Car;
 import dev.as.carfinder.car.CarRepository;
 import dev.as.carfinder.user.User;
 import dev.as.carfinder.user.UserRepository;
+import dev.as.carfinder.review.CreateReviewDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,79 +22,92 @@ public class ReviewServiceImpl implements ReviewService {
     private final CarRepository carRepository;
 
     @Override
-    public ReviewDTO createReview(ReviewDTO dto) {
-        Review review = new Review();
-        mapDtoToEntity(dto, review);
-        reviewRepository.save(review);
-        return mapEntityToDto(review);
-    }
+    public CreateReviewDTO createReview(Long carId, CreateReviewDTO dto) {
+        try {
+            Car car = carRepository.findById(carId)
+                    .orElseThrow(() -> new RuntimeException("Car not found with id: " + carId));
 
-    @Override
-    public ReviewDTO getReviewById(Long id) {
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Review not found"));
-        return mapEntityToDto(review);
-    }
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String email = auth.getName();
+            User owner = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
 
-    @Override
-    public List<ReviewDTO> getAllReviews() {
-        return reviewRepository.findAll().stream().map(this::mapEntityToDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public ReviewDTO updateReview(Long id, ReviewDTO dto) {
-        Review review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("Review not found"));
-        mapDtoToEntity(dto, review);
-        reviewRepository.save(review);
-        return mapEntityToDto(review);
-    }
-
-    @Override
-    public ReviewDTO patchReview(Long id, ReviewDTO dto) {
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Review not found"));
-
-        if (dto.getName() != null) review.setName(dto.getName());
-        if (dto.getStars() != null) review.setStars(dto.getStars());
-
-        if (dto.getUserId() != null) {
-            User user = userRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            review.setUser(user);
-        }
-
-        if (dto.getCarId() != null) {
-            Car car = carRepository.findById(dto.getCarId())
-                    .orElseThrow(() -> new RuntimeException("Car not found"));
+            // Create and populate Review entity
+            Review review = new Review();
+            review.setComment(dto.getComment());
+            review.setStars(dto.getStars());
+            review.setRating(dto.getRating());
             review.setCar(car);
+            review.setOwner(owner);
+
+            // Save and return mapped DTO
+            var savedReview = reviewRepository.save(review);
+            return new CreateReviewDTO(
+                    savedReview.getStars(),
+                    savedReview.getComment(),
+                    savedReview.getRating()
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Always useful for debug
+            throw new RuntimeException("Failed to create review: " + e.getMessage());
         }
-
-        Review saved = reviewRepository.save(review);
-        return mapEntityToDto(saved);
     }
-
 
     @Override
-    public void deleteReview(Long id) {
-        reviewRepository.deleteById(id);
+    public List<ReviewDTO> getReviewsByCar(Long carId) {
+        return reviewRepository.findByCarId(carId)
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    private void mapDtoToEntity(ReviewDTO dto, Review review) {
-        review.setName(dto.getName());
-        review.setStars(dto.getStars());
-
-        User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-        Car car = carRepository.findById(dto.getCarId()).orElseThrow(() -> new RuntimeException("Car not found"));
-
-        review.setUser(user);
-        review.setCar(car);
+    @Override
+    public void deleteReview(Long reviewId) {
+        reviewRepository.deleteById(reviewId);
     }
 
-    private ReviewDTO mapEntityToDto(Review review) {
+    @Override
+    public ReviewDTO updateReview(Long reviewId, ReviewDTO dto) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found with id: " + reviewId));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User loggedInUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+        if (!review.getOwner().getId().equals(loggedInUser.getId())) {
+            throw new SecurityException("You can only edit your own reviews.");
+        }
+
+        if (dto.getComment() != null) review.setComment(dto.getComment());
+        if (dto.getStars() != null) review.setStars(dto.getStars());
+        if (dto.getRating() != null) review.setRating(dto.getRating());
+
+        reviewRepository.save(review);
+        return mapToDTO(review);
+    }
+
+    // Converts Review entity to DTO
+    private ReviewDTO mapToDTO(Review review) {
         ReviewDTO dto = new ReviewDTO();
-        dto.setName(review.getName());
+        dto.setId(review.getId());
         dto.setStars(review.getStars());
-        dto.setUserId(review.getUser().getId());
+        dto.setComment(review.getComment());
+        if (review.getRating() != null) {
+            dto.setRating(Double.valueOf(review.getRating()));
+        } else {
+            dto.setRating(null); // Or 0.0 if you prefer a default
+        }
+        dto.setRating(Double.valueOf(review.getRating()));
         dto.setCarId(review.getCar().getId());
+
+        //dto.setComment(String.valueOf(review.getComment()));
+        if (review.getOwner() != null) {
+            dto.setOwnerId(review.getOwner().getId()); // Critical: set ownerId here
+        }
+
         return dto;
     }
 }

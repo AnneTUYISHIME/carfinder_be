@@ -23,6 +23,10 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 @Server(
                         description = "Local ENV",
                         url = "http://localhost:8080"
+                ),
+                @Server(
+                        description = "prod ENV",
+                        url = "https://carfinder-894g.onrender.com"
                 )
         }
 )

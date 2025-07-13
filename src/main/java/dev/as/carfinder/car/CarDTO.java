@@ -29,4 +29,5 @@ public class CarDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long ownerId;
+    private String condition; // "new" or "used"
 }

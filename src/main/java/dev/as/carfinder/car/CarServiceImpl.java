@@ -10,6 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.data.jpa.domain.Specification;
+import dev.as.carfinder.review.Review;
+import dev.as.carfinder.review.ReviewDTO;
+import dev.as.carfinder.review.ReviewRepository;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +29,7 @@ public class CarServiceImpl implements CarService {
     private final BrandRepository brandRepository;
     private final BodyTypeRepository bodyTypeRepository;
     private final UserRepository userRepository;
+    private ReviewRepository reviewRepository;
 
     @Override
     public CarDTO createCar(CarDTO dto) {
@@ -74,6 +79,7 @@ public class CarServiceImpl implements CarService {
         if (dto.getLocation() != null) car.setLocation(dto.getLocation());
         if (dto.getDriveType() != null) car.setDriveType(dto.getDriveType());
         if (dto.getEngine() != null) car.setEngine(dto.getEngine());
+        if (dto.getCondition() != null) car.setCondition(dto.getCondition());
         if (dto.getDescription() != null) car.setDescription(dto.getDescription());
         if (dto.getFeatures() != null) car.setFeatures(String.join(",", dto.getFeatures()));
         if (dto.getImages() != null) car.setImages(dto.getImages());
@@ -125,13 +131,14 @@ public class CarServiceImpl implements CarService {
 
 
     @Override
-    public List<CarDTO> filterCars(Long brandId, Long bodyTypeId, Double minPrice, Double maxPrice, String location, String driveType) {
+    public List<CarDTO> filterCars(Long brandId, Long bodyTypeId, Double minPrice, Double maxPrice, String location, String driveType, String condition) {
         Specification<Car> spec = Specification
                 .where(CarSpecifications.hasBrand(brandId))
                 .and(CarSpecifications.hasBodyType(bodyTypeId))
                 .and(CarSpecifications.priceBetween(minPrice, maxPrice))
                 .and(CarSpecifications.locationLike(location))
-                .and(CarSpecifications.driveTypeEquals(driveType));
+                .and(CarSpecifications.driveTypeEquals(driveType))
+                .and(CarSpecifications.conditionEquals(condition));
 
         return carRepository.findAll(spec).stream()
                 .map(this::mapEntityToDto)
@@ -149,11 +156,14 @@ public class CarServiceImpl implements CarService {
         car.setEngine(dto.getEngine());
         car.setDescription(dto.getDescription());
         car.setFeatures(String.join(",", dto.getFeatures()));
+        car.setCondition(dto.getCondition());
 
         car.setBrand(brandRepository.findById(dto.getBrandId())
                 .orElseThrow(() -> new RuntimeException("Brand not found")));
         car.setBodyType(bodyTypeRepository.findById(dto.getBodyTypeId())
                 .orElseThrow(() -> new RuntimeException("BodyType not found")));
+        //car.setOwner(userRepository.findById(dto.getOwnerId())
+               // .orElseThrow(() -> new RuntimeException("Brand not found")));
 
         return car;
     }
@@ -172,7 +182,8 @@ public class CarServiceImpl implements CarService {
                 .features(car.getFeatures().split(","))
                 .brandId(car.getBrand().getId())
                 .bodyTypeId(car.getBodyType().getId())
-//                .ownerId(car.getOwner().getId())
+               .ownerId(car.getOwner().getId())
+                .condition(car.getCondition())
                 .build();
     }
 
@@ -186,4 +197,48 @@ public class CarServiceImpl implements CarService {
     private boolean isOwner(Car car) {
         return car.getOwner().getEmail().equals(getCurrentUser().getEmail());
     }
+
+
+    @Override
+    public ReviewDTO addReviewToCar(ReviewDTO dto) {
+        Car car = carRepository.findById(dto.getCarId())
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+
+        Review review = new Review();
+        review.setCar(car);
+        review.setRating(dto.getRating());
+        review.setComment(dto.getComment());
+
+        Review saved = reviewRepository.save(review);
+        return mapReviewToDto(saved);
+    }
+
+    @Override
+    public List<ReviewDTO> getReviewsForCar(Long carId) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new RuntimeException("Car not found"));
+
+        return reviewRepository.findByCar(car)
+                .stream()
+                .map(this::mapReviewToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ReviewDTO getReviewById(Long id) {
+        return reviewRepository.findById(id)
+                .map(this::mapReviewToDto)
+                .orElseThrow(() -> new RuntimeException("Review not found"));
+    }
+
+    private ReviewDTO mapReviewToDto(Review review) {
+        ReviewDTO dto = new ReviewDTO();
+        dto.setId(review.getId());
+        dto.setCarId(review.getCar().getId());
+        dto.setRating(Double.valueOf(review.getRating()));
+        dto.setComment(review.getComment());
+        return dto;
+    }
+
 }
+

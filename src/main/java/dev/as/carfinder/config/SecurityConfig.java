@@ -30,7 +30,12 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/body_types").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/brands").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/cars").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/reviews").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/cars/{carId}/reviews").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/cars/reviews/{reviewId}").permitAll()
+
+                                //.requestMatchers(HttpMethod.DELETE, "/api/cars/*/reviews/*").permitAll()
+
+
                                 .requestMatchers(
                                         "/api/auth/**",
                                         "/",

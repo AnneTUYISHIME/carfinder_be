@@ -13,39 +13,11 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    @SecurityRequirement(name = "auth")
-    @PostMapping
-    public ReviewDTO createReview(@RequestBody ReviewDTO dto) {
-        return reviewService.createReview(dto);
-    }
 
-    @SecurityRequirement(name = "auth")
-    @GetMapping("/{id}")
-    public ReviewDTO getReview(@PathVariable Long id) {
-        return reviewService.getReviewById(id);
-    }
 
-    @GetMapping
-    public List<ReviewDTO> getAllReviews() {
-        return reviewService.getAllReviews();
-    }
-
-    @SecurityRequirement(name = "auth")
+    //@SecurityRequirement(name = "auth")
     @PreAuthorize("@reviewSecurity.isOwnerOfReview(#id)")
-    @PutMapping("/{id}")
-    public ReviewDTO updateReview(@PathVariable Long id, @RequestBody ReviewDTO dto) {
-        return reviewService.updateReview(id, dto);
-    }
-
     @SecurityRequirement(name = "auth")
-    @PreAuthorize("@reviewSecurity.isOwnerOfReview(#id)")
-    @PatchMapping("/{id}")
-    public ReviewDTO patchReview(@PathVariable Long id, @RequestBody ReviewDTO dto) {
-        return reviewService.patchReview(id, dto);
-    }
-
-    @SecurityRequirement(name = "auth")
-    @PreAuthorize("@reviewSecurity.isOwnerOfReview(#id)")
     @DeleteMapping("/{id}")
     public void deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);

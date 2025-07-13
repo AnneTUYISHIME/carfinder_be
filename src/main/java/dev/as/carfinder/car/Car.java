@@ -51,10 +51,12 @@ public class Car {
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Review> reviews;
-    @ManyToOne
+    @Column(nullable = false)
+    private String condition;
+   /* @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
+   */
 
 
 

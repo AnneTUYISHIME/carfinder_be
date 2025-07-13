@@ -21,16 +21,18 @@ public class Review {
     private String name;
 
     private Integer stars;
+    private  String comment;
+    private Double rating;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     @ManyToOne
-    @JoinColumn(name = "car_id")
+    @JoinColumn(name = "car_id", nullable = false)
     private Car car;
-
 }
+
 
 
 

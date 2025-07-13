@@ -30,5 +30,10 @@ public class CarSpecifications {
     public static Specification<Car> driveTypeEquals(String driveType) {
         return (root, query, cb) -> driveType == null ? null : cb.equal(cb.lower(root.get("driveType")), driveType.toLowerCase());
     }
+    public static Specification<Car> conditionEquals(String condition) {
+        return (root, query, cb) ->
+                condition == null ? null : cb.equal(cb.lower(root.get("condition")), condition.toLowerCase());
+    }
+
 }
 
