@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .cors(customizer ->
                         customizer.configurationSource(request -> {
                             var corsConfig = new CorsConfiguration();
-                            corsConfig.addAllowedOrigin("*");
+                            corsConfig.addAllowedOrigin("http://localhost:3000");
                             corsConfig.addAllowedHeader("*");
                             corsConfig.addAllowedMethod("*");
                             corsConfig.setAllowCredentials(true);
