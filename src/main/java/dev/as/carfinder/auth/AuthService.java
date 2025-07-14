@@ -3,6 +3,7 @@ package dev.as.carfinder.auth;
 import dev.as.carfinder.auth.dto.LoginDto;
 import dev.as.carfinder.auth.dto.RegisterDto;
 import dev.as.carfinder.auth.jwt.JwtService;
+import dev.as.carfinder.email.MailService;
 import dev.as.carfinder.exception.ResourceNotFound;
 import dev.as.carfinder.user.User;
 import dev.as.carfinder.user.UserRepository;
@@ -26,6 +27,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserRepository userRepo;
     private final ModelMapper modelMapper;
+    private final MailService mailService;
 
 
 
@@ -60,11 +62,29 @@ public class AuthService {
     }
 
     public String forgotPassword(String email) {
+        // Step 1: Get user by email
         User user = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
-        return jwtService.generateResetPasswordToken(user);
+        // Step 2: Generate reset token with user info
+        String token = jwtService.generateResetPasswordToken(user);
+
+        // Step 3: Build password reset link for frontend
+        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+
+        // Step 4: Create the HTML email content
+        String html = "<p>Hello <b>" + user.getFirstName() + "</b>,</p>"
+                + "<p>You requested a password reset. Click the link below:</p>"
+                + "<p><a href=\"" + resetLink + "\">Reset Password</a></p>"
+                + "<br><p>If you didn't request this, you can ignore this email.</p>";
+
+        // Step 5: Send email
+        mailService.send(user.getEmail(), "Reset Your Password", html);
+
+        // Step 6: Return message
+        return "Password reset link has been sent to your email.";
     }
+
 
     public void resetPassword(String token, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
