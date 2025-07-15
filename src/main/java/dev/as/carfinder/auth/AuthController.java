@@ -24,10 +24,11 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Login endpoint")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginDto loginDto) {
-        String token = authService.userLogin(loginDto);
-        String message = "User logged in successfully";
-        return ResponseEntity.ok(new LoginResponse(token, message));
+        LoginResponse loginResponse = authService.userLogin(loginDto);
+        return ResponseEntity.ok(loginResponse);
     }
+
+
 
     @PostMapping("/register")
     @Operation(summary = "Register endpoint")

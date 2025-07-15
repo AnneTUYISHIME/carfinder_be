@@ -8,6 +8,7 @@ import dev.as.carfinder.exception.ResourceNotFound;
 import dev.as.carfinder.user.User;
 import dev.as.carfinder.user.UserRepository;
 import dev.as.carfinder.user.dto.UserResponseDto;
+import dev.as.carfinder.auth.dto.LoginResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -39,15 +40,29 @@ public class AuthService {
         return modelMapper.map(createdUser, UserResponseDto.class);
     }
 
-    public String userLogin(LoginDto dto) {
+    public LoginResponse userLogin(LoginDto dto) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(auth);
-        var authenticatedUser = userRepo.findByEmail(dto.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        return jwtService.generateToken(authenticatedUser);
+
+        var authenticatedUser = userRepo.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String token = jwtService.generateToken(authenticatedUser);
+
+        UserResponseDto userDto = new UserResponseDto(
+                authenticatedUser.getId(),
+                authenticatedUser.getEmail(),
+                authenticatedUser.getFirstName(),
+                authenticatedUser.getLastName(),
+                authenticatedUser.getRole()
+        );
+
+        return new LoginResponse("User logged in successfully", token, userDto);
     }
+
 
     public UserResponseDto getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
